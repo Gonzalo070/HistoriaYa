@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>HistoriaYa</title>
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <style>
+    :root {
+      --pri: #0F5B7A;
+      --dark: #0A3F55;
+      --acc: #2AA89B;
+      --soft: #E6F4F1;
+      --bg: #F5F8F9;
+      --card: #fff;
+      --tx: #12303B;
+      --mut: #5B747E;
+      --bd: #D3E2E6;
+      --err: #B3261E;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --pri: #2C8DB3;
+        --dark: #1E7396;
+        --acc: #3CC5B6;
+        --soft: #12363A;
+        --bg: #0C1B21;
+        --card: #122730;
+        --tx: #E4F0F3;
+        --mut: #93AEB7;
+        --bd: #244350;
+        color-scheme: dark;
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --pri: #2C8DB3;
+      --dark: #1E7396;
+      --acc: #3CC5B6;
+      --soft: #12363A;
+      --bg: #0C1B21;
+      --card: #122730;
+      --tx: #E4F0F3;
+      --mut: #93AEB7;
+      --bd: #244350;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--tx);
+      font-family: Figtree, system-ui, -apple-system, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+
+    header {
+      background: var(--pri);
+      color: #fff;
+      padding: 18px 20px;
+    }
+
+    header div {
+      max-width: 760px;
+      margin: auto;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    header p {
+      margin: 2px 0 0;
+      font-size: 14px;
+      opacity: 0.85;
+    }
+
+    main {
+      max-width: 760px;
+      margin: auto;
+      padding: 16px 16px 40px;
+      display: grid;
+      gap: 14px;
+    }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--bd);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 560px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--mut);
+      margin-bottom: 4px;
+    }
+
+    input[type=text],
+    input[type=date],
+    textarea {
+      width: 100%;
+      font: inherit;
+      color: var(--tx);
+      background: var(--bg);
+      border: 1px solid var(--bd);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus,
+    button:focus-visible,
+    .chip:focus-within {
+      outline: 2px solid var(--acc);
+      outline-offset: 1px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .cat {
+      margin: 14px 0 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--pri);
+    }
+
+    :root[data-theme="dark"] .cat {
+      color: var(--acc);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      position: relative;
+    }
+
+    .chip input {
+      position: absolute;
+      opacity: 0;
+      inset: 0;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .chip span {
+      display: block;
+      padding: 6px 12px;
+      border: 1px solid var(--bd);
+      border-radius: 999px;
+      font-size: 14px;
+      background: var(--bg);
+      cursor: pointer;
+    }
+
+    .chip input:checked + span {
+      background: var(--pri);
+      border-color: var(--pri);
+      color: #fff;
+    }
+
+    .sel {
+      margin-top: 12px;
+      padding: 8px 12px;
+      background: var(--soft);
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--tx);
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    button {
+      font: inherit;
+      font-weight: 600;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+
+    .btn {
+      background: var(--pri);
+      color: #fff;
+    }
+
+    .btn:hover {
+      background: var(--dark);
+    }
+
+    .btn2 {
+      background: var(--soft);
+      color: var(--tx);
+      border: 1px solid var(--acc);
+    }
+
+    .rec.on {
+      background: var(--err);
+      color: #fff;
+      border-color: var(--err);
+    }
+
+    canvas {
+      width: 100%;
+      height: 170px;
+      background: #fff;
+      border: 1px dashed var(--acc);
+      border-radius: 8px;
+      touch-action: none;
+      display: block;
+    }
+
+    .hint {
+      font-size: 13px;
+      color: var(--mut);
+      margin: 6px 0 0;
+    }
+
+    #msg {
+      font-size: 14px;
+      min-height: 20px;
+      margin-top: 10px;
+    }
+
+    .big {
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+    }
+
+    button.cat {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: none;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--bd);
+      border-radius: 0;
+    }
+
+    .add {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--bd);
+    }
+
+    .add .grid {
+      grid-template-columns: 1fr 1.4fr auto;
+      align-items: end;
+    }
+
+    @media (max-width: 560px) {
+      .add .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    select {
+      width: 100%;
+      font: inherit;
+      color: var(--tx);
+      background: var(--bg);
+      border: 1px solid var(--bd);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    input[type=email],
+    input[type=password] {
+      width: 100%;
+      font: inherit;
+      color: var(--tx);
+      background: var(--bg);
+      border: 1px solid var(--bd);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px">
+      <div>
+        <h1>HistoriaYa</h1>
+        <p>Orden de estudios médicos con firma digital</p>
+      </div>
+      <button class="btn2" id="salir" type="button" hidden>Salir</button>
+    </div>
+  </header>
+
+  <main id="gate">
+    <section id="authBox">
+      <h2 id="aTit">Ingresar</h2>
+      <div class="grid">
+        <div class="full" id="reg" hidden>
+          <div class="grid">
+            <div>
+              <label for="aNom">Nombre y apellido</label>
+              <input type="text" id="aNom">
+            </div>
+            <div>
+              <label for="aMat">Matrícula profesional</label>
+              <input type="text" id="aMat">
+            </div>
+          </div>
+        </div>
+        <div class="full">
+          <label for="aMail">Email</label>
+          <input type="email" id="aMail" autocomplete="email">
+        </div>
+        <div class="full">
+          <label for="aPass">Contraseña</label>
+          <input type="password" id="aPass" autocomplete="current-password">
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn" id="aGo" type="button">Ingresar</button>
+        <button class="btn2" id="aCambiar" type="button">Crear cuenta</button>
+        <button class="btn2" id="olvide" type="button">Olvidé mi contraseña</button>
+      </div>
+      <div id="aMsg" role="status" style="margin-top:10px; font-size:14px"></div>
+    </section>
+
+    <section id="payBox" hidden>
+      <h2>Activá tu acceso</h2>
+      <p>Para usar HistoriaYa necesitás abonar el acceso. Precio: <b id="pPrecio"></b>.</p>
+      <div class="row">
+        <button class="btn" id="pagar" type="button">Pagar con Mercado Pago</button>
+        <button class="btn2" id="actualizar" type="button">Ya pagué, actualizar</button>
+      </div>
+      <div id="pMsg" role="status" style="margin-top:10px; font-size:14px"></div>
+    </section>
+  </main>
+
+  <main id="app" hidden>
+    <section>
+      <h2>Datos del paciente</h2>
+      <div class="grid">
+        <div class="full">
+          <label for="nombre">Nombre y apellido</label>
+          <input type="text" id="nombre" autocomplete="name">
+        </div>
+        <div>
+          <label for="afiliado">Número de afiliado</label>
+          <input type="text" id="afiliado" inputmode="numeric">
+        </div>
+        <div>
+          <label for="dni">DNI</label>
+          <input type="text" id="dni" inputmode="numeric">
+        </div>
+        <div>
+          <label for="fecha">Fecha</label>
+          <input type="date" id="fecha">
+        </div>
+        <div>
+          <label for="os">Obra social</label>
+          <input type="text" id="os">
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Estudios médicos</h2>
+      <input type="text" id="buscar" placeholder="Buscar estudio (ej. ecografía, sangre)" aria-label="Buscar estudio">
+      <div class="row">
+        <button class="btn2" id="tAll" type="button">Minimizar todas</button>
+      </div>
+      <div id="estudios"></div>
+      <div class="sel" id="sel">Todavía no elegiste estudios.</div>
+      <div class="add">
+        <label>¿Falta un estudio? Agregalo en su categoría</label>
+        <div class="grid">
+          <div>
+            <select id="nCat" aria-label="Categoría"></select>
+          </div>
+          <div>
+            <input type="text" id="nEst" placeholder="Nombre del estudio" aria-label="Nombre del estudio">
+          </div>
+          <button class="btn2" id="nAdd" type="button">Agregar estudio</button>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Detalle</h2>
+      <label for="detalle">Escribí o dictá el detalle</label>
+      <textarea id="detalle" placeholder="Motivo de consulta, indicaciones, observaciones..."></textarea>
+      <div class="row">
+        <button class="btn2 rec" id="rec" type="button">Dictar con la voz</button>
+        <button class="btn2" id="limpiar" type="button">Borrar texto</button>
+      </div>
+      <p class="hint" id="vhint"></p>
+      <p class="hint">En el celular, si el botón no funciona, tocá el cuadro de texto y usá el micrófono del teclado: el texto dictado queda igual en el PDF.</p>
+    </section>
+
+    <section>
+      <h2>Firma digital</h2>
+      <canvas id="firma" aria-label="Área de firma"></canvas>
+      <div class="row">
+        <button class="btn2" id="borrarF" type="button">Borrar firma</button>
+      </div>
+      <p class="hint">Firmá con el dedo o el mouse dentro del recuadro.</p>
+    </section>
+
+    <section>
+      <button class="btn big" id="pdf" type="button">Descargar PDF</button>
+      <button class="btn2 big" id="limpiarTodo" type="button" style="margin-top:8px">Limpiar todos los campos</button>
+      <div id="msg" role="status"></div>
+    </section>
+  </main>
+
+  <script>
+    const ESTUDIOS = {
+      "Laboratorio": [
+        "Hemograma completo", "Glucemia", "Hepatograma", "Colesterol y triglicéridos",
+        "Uremia y creatininemia", "Orina completa", "Hemoglobina glicosilada",
+        "Perfil tiroideo (TSH, T4)", "Coagulograma", "Ionograma", "Vitamina D",
+        "Ferritina y hierro sérico", "PSA", "Hormonas", "Urocultivo", "Coprocultivo"
+      ],
+      "Imágenes": [
+        "Radiografía de tórax", "Radiografía de columna", "Radiografía de extremidades",
+        "Ecografía abdominal", "Ecografía ginecológica", "Ecografía obstétrica",
+        "Ecografía renal", "Ecografía tiroidea", "Ecografía mamaria", "Ecografía Doppler",
+        "Tomografía computada", "Resonancia magnética", "Mamografía", "Densitometría ósea"
+      ],
+      "Cardiología": [
+        "Electrocardiograma", "Ergometría", "Ecocardiograma", "Holter de 24 horas",
+        "MAPA (presión arterial 24 hs)", "Eco-Doppler cardíaco"
+      ],
+      "Digestivo": [
+        "Videoendoscopia digestiva alta", "Videocolonoscopia", "Test de aliento",
+        "Sangre oculta en materia fecal"
+      ],
+      "Ginecología y urología": [
+        "Papanicolaou y colposcopia", "Citología mamaria", "Espermograma", "Uroflujometría"
+      ],
+      "Neurología y otros": [
+        "Electroencefalograma", "Electromiograma", "Espirometría", "Audiometría",
+        "Campo visual", "Fondo de ojo", "Polisomnografía"
+      ]
+    };
+
+    const $ = id => document.getElementById(id);
+    const sel = new Set();
+    const cerradas = new Set();
+    const hoy = new Date();
+    $('fecha').value = hoy.getFullYear() + '-' + String(hoy.getMonth() + 1).padStart(2, '0') + '-' + String(hoy.getDate()).padStart(2, '0');
+
+    function renderEst(q = '') {
+      const box = $('estudios');
+      box.innerHTML = '';
+      $('tAll').textContent = cerradas.size >= Object.keys(ESTUDIOS).length ? 'Expandir todas' : 'Minimizar todas';
+      q = q.trim().toLowerCase();
+      let any = false;
+
+      for (const [cat, list] of Object.entries(ESTUDIOS)) {
+        const items = list.filter(e => !q || e.toLowerCase().includes(q) || cat.toLowerCase().includes(q));
+        if (!items.length) continue;
+        any = true;
+
+        const abierta = !q || !cerradas.has(cat);
+        const h = document.createElement('button');
+        h.type = 'button';
+        h.className = 'cat';
+        h.setAttribute('aria-expanded', abierta);
+        const n = items.filter(e => sel.has(e)).length;
+        h.textContent = (abierta ? '▾ ' : '▸ ') + cat + ' (' + items.length + ')' + (n ? ' - ' + n + ' elegido' + (n > 1 ? 's' : '') : '');
+        h.onclick = () => {
+          if (q) return;
+          cerradas.has(cat) ? cerradas.delete(cat) : cerradas.add(cat);
+          renderEst($('buscar').value);
+        };
+        box.appendChild(h);
+
+        const w = document.createElement('div');
+        w.className = 'chips';
+        items.forEach(e => {
+          const l = document.createElement('label');
+          l.className = 'chip';
+          const i = document.createElement('input');
+          i.type = 'checkbox';
+          i.checked = sel.has(e);
+          i.onchange = () => {
+            i.checked ? sel.add(e) : sel.delete(e);
+            resumen();
+            renderEst($('buscar').value);
+          };
+          const s = document.createElement('span');
+          s.textContent = e;
+          l.append(i, s);
+          w.appendChild(l);
+        });
+
+        if (abierta) box.appendChild(w);
+      }
+      if (!any) box.innerHTML = '<p class="hint">No hay estudios con esa búsqueda.</p>';
+    }
+
+    function resumen() {
+      $('sel').textContent = sel.size 
+        ? sel.size + ' elegido' + (sel.size > 1 ? 's' : '') + ': ' + [...sel].join(', ') 
+        : 'Todavía no elegiste estudios.';
+    }
+
+    $('buscar').oninput = e => renderEst(e.target.value);
+    $('tAll').onclick = () => {
+      if (cerradas.size >= Object.keys(ESTUDIOS).length) {
+        cerradas.clear();
+      } else {
+        Object.keys(ESTUDIOS).forEach(c => cerradas.add(c));
+      }
+      renderEst($('buscar').value);
+    };
+
+    // Estudios agregados por el médico
+    let extra = {};
+    try {
+      extra = JSON.parse(localStorage.getItem('hy_extra') || '{}');
+    } catch (_) {}
+
+    for (const [c, l] of Object.entries(extra)) {
+      if (ESTUDIOS[c]) {
+        l.forEach(e => {
+          if (!ESTUDIOS[c].includes(e)) ESTUDIOS[c].push(e);
+        });
+      }
+    }
+
+    Object.keys(ESTUDIOS).forEach(c => {
+      const o = document.createElement('option');
+      o.value = o.textContent = c;
+      $('nCat').appendChild(o);
+    });
+
+    $('nAdd').onclick = () => {
+      const c = $('nCat').value;
+      const n = $('nEst').value.trim().replace(/\s+/g, ' ');
+      if (!n) return;
+      const ya = ESTUDIOS[c].find(e => e.toLowerCase() === n.toLowerCase());
+      const nom = ya || n;
+      if (!ya) {
+        ESTUDIOS[c].push(n);
+        (extra[c] = extra[c] || []).push(n);
+        try {
+          localStorage.setItem('hy_extra', JSON.stringify(extra));
+        } catch (_) {}
+      }
+      sel.add(nom);
+      $('nEst').value = '';
+      $('buscar').value = '';
+      renderEst();
+      resumen();
+    };
+
+    $('nEst').addEventListener('keydown', e => {
+      if (e.key === 'Enter') $('nAdd').click();
+    });
+
+    renderEst();
+
+    // Dictado por voz
+    async function pedirMic() {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return true;
+      try {
+        const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+        s.getTracks().forEach(t => t.stop());
+        return true;
+      } catch (e) {
+        $('vhint').textContent = 'No se pudo acceder al micrófono (' + (e.name || 'error') + '). Si el navegador no te preguntó nada, es porque esta vista no habilita el micrófono: abrí la app en su propia pestaña o alojala en tu sitio con https.';
+        return false;
+      }
+    }
+
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let rec = null, on = false;
+
+    if (!SR) {
+      $('rec').disabled = true;
+      $('vhint').textContent = 'Tu navegador no permite dictado por voz. Podés escribir el detalle.';
+    } else {
+      rec = new SR();
+      rec.lang = 'es-AR';
+      rec.continuous = true;
+      rec.interimResults = false;
+
+      rec.onresult = e => {
+        let t = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          if (e.results[i].isFinal) t += e.results[i][0].transcript;
+        }
+        if (t) {
+          const d = $('detalle');
+          d.value += (d.value && !/\s$/.test(d.value) ? ' ' : '') + t.trim();
+        }
+      };
+
+      rec.onerror = e => {
+        on = false;
+        paint();
+        $('vhint').textContent = (e.error === 'not-allowed' || e.error === 'service-not-allowed')
+          ? 'No hay permiso para usar el micrófono. Habilitalo en el navegador o escribí el detalle.'
+          : 'El dictado se detuvo (' + e.error + '). Probá de nuevo.';
+      };
+
+      rec.onend = () => {
+        if (on) {
+          try {
+            rec.start();
+          } catch (_) {
+            on = false;
+            paint();
+          }
+        }
+      };
+    }
+
+    function paint() {
+      $('rec').classList.toggle('on', on);
+      $('rec').textContent = on ? 'Detener dictado' : 'Dictar con la voz';
+      if (on) $('vhint').textContent = 'Escuchando... hablá con normalidad.';
+    }
+
+    $('rec').onclick = () => {
+      if (!rec) return;
+      if (on) {
+        on = false;
+        rec.stop();
+        paint();
+        $('vhint').textContent = '';
+      } else {
+        pedirMic().then(ok => {
+          if (!ok) return;
+          try {
+            on = true;
+            rec.start();
+            paint();
+          } catch (_) {
+            on = false;
+            paint();
+          }
+        });
+      }
+    };
+
+    $('limpiar').onclick = () => {
+      $('detalle').value = '';
+    };
+
+    // Firma única
+    const cv = $('firma'), cx = cv.getContext('2d');
+    let dibujo = false, firmado = false;
+
+    function ajustar() {
+      const r = cv.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+      cv.width = r.width * d;
+      cv.height = r.height * d;
+      cx.scale(d, d);
+      cx.lineWidth = 2.2;
+      cx.lineCap = 'round';
+      cx.lineJoin = 'round';
+      cx.strokeStyle = '#0A3F55';
+      firmado = false;
+    }
+
+    ajustar();
+    window.addEventListener('resize', () => {
+      if (!firmado) ajustar();
+    });
+
+    const pos = e => {
+      const r = cv.getBoundingClientRect();
+      return [e.clientX - r.left, e.clientY - r.top];
+    };
+
+    cv.addEventListener('pointerdown', e => {
+      dibujo = true;
+      cv.setPointerCapture(e.pointerId);
+      const [x, y] = pos(e);
+      cx.beginPath();
+      cx.moveTo(x, y);
+      cx.lineTo(x + 0.1, y + 0.1);
+      cx.stroke();
+      firmado = true;
+    });
+
+    cv.addEventListener('pointermove', e => {
+      if (!dibujo) return;
+      const [x, y] = pos(e);
+      cx.lineTo(x, y);
+      cx.stroke();
+    });
+
+    ['pointerup', 'pointercancel'].forEach(t => {
+      cv.addEventListener(t, () => { dibujo = false; });
+    });
+
+    $('borrarF').onclick = () => {
+      cx.clearRect(0, 0, cv.width, cv.height);
+      firmado = false;
+    };
+
+    // PDF
+    function msg(t, err) {
+      const m = $('msg');
+      m.textContent = t;
+      m.style.color = err ? 'var(--err)' : 'var(--tx)';
+    }
+
+    function fechaAR(v) {
+      const [a, m, d] = v.split('-');
+      return d + '/' + m + '/' + a;
+    }
+
+    $('pdf').onclick = async () => {
+      const nombre = $('nombre').value.trim(), dni = $('dni').value.trim();
+      if (!nombre || !dni) {
+        msg('Completá al menos el nombre y el DNI del paciente.', true);
+        return;
+      }
+      if (!firmado) {
+        msg('Falta la firma digital.', true);
+        return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+      const W = 210, M = 18;
+      let y = 0;
+
+      doc.setFillColor(15, 91, 122);
+      doc.rect(0, 0, W, 24, 'F');
+      doc.setTextColor(255);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(20);
+      doc.text('HistoriaYa', M, 15);
+
+      y = 36;
+      doc.setTextColor(18, 48, 59);
+      const campos = [
+        ['Paciente', nombre],
+        ['N° de afiliado', $('afiliado').value.trim() || '-'],
+        ['DNI', dni],
+        ['Fecha', $('fecha').value ? fechaAR($('fecha').value) : '-'],
+        ['Obra social', $('os').value.trim() || '-']
+      ];
+
+      doc.setFontSize(11);
+      campos.forEach(([k, v]) => {
+        doc.setFont('helvetica', 'bold');
+        doc.text(k + ':', M, y);
+        doc.setFont('helvetica', 'normal');
+        doc.text(String(v), M + 38, y);
+        y += 7;
+      });
+
+      y += 3;
+      doc.setDrawColor(42, 168, 155);
+      doc.line(M, y, W - M, y);
+      y += 8;
+
+      const salto = h => {
+        if (y + h > 280) {
+          doc.addPage();
+          y = 20;
+        }
+      };
+
+      if (sel.size) {
+        doc.setFont('helvetica', 'bold');
+        doc.text('Estudios solicitados', M, y);
+        y += 6;
+        doc.setFont('helvetica', 'normal');
+        [...sel].forEach(e => {
+          salto(6);
+          doc.text('- ' + e, M + 2, y);
+          y += 6;
+        });
+        y += 4;
+      }
+
+      salto(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Detalle', M, y);
+      y += 6;
+      doc.setFont('helvetica', 'normal');
+      const txt = $('detalle').value.trim() || '-';
+      doc.splitTextToSize(txt, W - 2 * M).forEach(l => {
+        salto(6);
+        doc.text(l, M, y);
+        y += 5.5;
+      });
+
+      y += 10;
+      salto(45);
+      doc.addImage(cv.toDataURL('image/png'), 'PNG', M, y, 70, 70 * cv.height / cv.width);
+      y += 70 * cv.height / cv.width + 1;
+      doc.setDrawColor(18, 48, 59);
+      doc.line(M, y, M + 70, y);
+      doc.setFontSize(9);
+      doc.text('Firma', M, y + 5);
+      if (window.medico) {
+        doc.text('Dr/a. ' + window.medico.nombre + ' - Matrícula ' + window.medico.matricula, M, y + 10);
+      }
+
+      const fname = 'HistoriaYa_' + nombre.replace(/[^\wáéíóúñÁÉÍÓÚÑ]+/g, '_') + '.pdf';
+      try {
+        const buf = doc.output('arraybuffer');
+        const d = (typeof claude !== 'undefined' && claude.use) ? await claude.use('downloads') : null;
+        if (d) {
+          await d.save({ filename: fname, data: buf });
+          msg('PDF listo.');
+        } else {
+          doc.save(fname);
+          msg('PDF listo.');
+        }
+      } catch (e) {
+        if (e && e.code === 'declined') {
+          msg('Descarga cancelada.', true);
+          return;
+        }
+        msg('No se pudo descargar el PDF. Detalle técnico: ' + ((e && (e.code || e.name)) || 'error') + ' - ' + ((e && e.message) || 'sin mensaje'), true);
+        console.error(e);
+      }
+    };
+
+    // Limpiar todo
+    let armado = null;
+    $('limpiarTodo').onclick = () => {
+      const b = $('limpiarTodo');
+      if (!armado) {
+        b.textContent = '¿Seguro? Tocá de nuevo para borrar todo';
+        armado = setTimeout(() => {
+          armado = null;
+          b.textContent = 'Limpiar todos los campos';
+        }, 4000);
+        return;
+      }
+      clearTimeout(armado);
+      armado = null;
+      b.textContent = 'Limpiar todos los campos';
+      if (on && rec) {
+        on = false;
+        try {
+          rec.stop();
+        } catch (_) {}
+        paint();
+      }
+      ['nombre', 'afiliado', 'dni', 'os', 'detalle', 'buscar', 'nEst'].forEach(id => {
+        $(id).value = '';
+      });
+      const t = new Date();
+      $('fecha').value = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+      sel.clear();
+      renderEst();
+      resumen();
+      cx.clearRect(0, 0, cv.width, cv.height);
+      firmado = false;
+      $('vhint').textContent = '';
+      msg('Campos limpios.');
+    };
+  </script>
+
+  <script>
+    // ===== Cuentas y suscripción =====
+    const SB_URL = 'https://phuefdfbhoychkwmkpbw.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBodWVmZGZiaG95Y2hrd21rcGJ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNzg3NzQsImV4cCI6MjEwNzc1NDc3NH0.5_o0w_pnpp8S6I9lEYeSWHqnGLTSLYjmh0sTvkORU0A';
+    const PRECIO = 'ARS 40.000 (pago anual)';
+    const MODO_PAGO = 'mp'; // 'mp' = cobro automático con Mercado Pago. 'manual' = cobrás vos y activás a mano.
+    const WHATSAPP = '5492613287819';
+    
+    const sb = supabase.createClient(SB_URL, SB_KEY);
+    const q = id => document.getElementById(id);
+    let modo = 'in', poll = null;
+    const sid = () => localStorage.getItem('hy_sid');
+
+    function vista(v) {
+      q('gate').hidden = v === 'app';
+      q('app').hidden = v !== 'app';
+      q('authBox').hidden = v !== 'auth';
+      q('payBox').hidden = v !== 'pay';
+      q('salir').hidden = v === 'auth';
+    }
+
+    function say(id, t, err) {
+      const m = q(id);
+      m.textContent = t;
+      m.style.color = err ? 'var(--err)' : 'var(--tx)';
+    }
+
+    q('pPrecio').textContent = PRECIO;
+
+    if (MODO_PAGO === 'manual') {
+      q('payBox').innerHTML = '<h2>Activá tu acceso</h2><p>Para usar HistoriaYa escribinos por WhatsApp: te pasamos el precio y las formas de pago. Apenas confirmemos tu pago, activamos tu cuenta.</p><div class="row"><a class="btn" style="text-decoration:none;display:inline-block;padding:10px 16px;border-radius:8px;color:#fff;font-weight:600" target="_blank" rel="noopener" href="https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent('Hola, quiero activar mi cuenta de HistoriaYa') + '">Escribir por WhatsApp</a><button class="btn2" id="actualizar" type="button">Ya me activaron, actualizar</button></div><div id="pMsg" role="status" style="margin-top:10px;font-size:14px"></div>';
+    }
+
+    async function salir(m) {
+      clearInterval(poll);
+      await sb.auth.signOut();
+      localStorage.removeItem('hy_sid');
+      vista('auth');
+      say('aMsg', m || '', !!m);
+    }
+
+    async function revisar(uid) {
+      const { data: p, error } = await sb.from('profiles').select('*').eq('id', uid).single();
+      if (error || !p) return;
+      if (p.session_id !== sid()) {
+        await salir('Tu cuenta se abrió en otro dispositivo. Ingresá de nuevo para usarla acá.');
+        return;
+      }
+      window.medico = { nombre: p.nombre || '', matricula: p.matricula || '' };
+      const ok = p.subscription_status === 'active' && (!p.current_period_end || new Date(p.current_period_end) > new Date());
+      vista(ok ? 'app' : 'pay');
+    }
+
+    async function abrir(session, nueva) {
+      if (nueva) {
+        localStorage.setItem('hy_sid', crypto.randomUUID());
+        await sb.from('profiles').update({ session_id: sid() }).eq('id', session.user.id);
+      }
+      await revisar(session.user.id);
+      clearInterval(poll);
+      poll = setInterval(() => revisar(session.user.id), 20000);
+    }
+
+    q('aCambiar').onclick = () => {
+      modo = modo === 'in' ? 'up' : 'in';
+      q('reg').hidden = modo === 'in';
+      q('aTit').textContent = q('aGo').textContent = modo === 'in' ? 'Ingresar' : 'Crear cuenta';
+      q('aCambiar').textContent = modo === 'in' ? 'Crear cuenta' : 'Ya tengo cuenta';
+    };
+
+    q('aGo').onclick = async () => {
+      const email = q('aMail').value.trim();
+      const pass = q('aPass').value;
+      if (!email || pass.length < 6) {
+        say('aMsg', 'Ingresá un email y una contraseña de al menos 6 caracteres.', true);
+        return;
+      }
+      say('aMsg', 'Procesando...');
+
+      if (modo === 'up') {
+        const nombre = q('aNom').value.trim();
+        const mat = q('aMat').value.trim();
+        if (!nombre || !mat) {
+          say('aMsg', 'Completá tu nombre y matrícula.', true);
+          return;
+        }
+        const { data, error } = await sb.auth.signUp({
+          email,
+          password: pass,
+          options: { data: { nombre, matricula: mat } }
+        });
+        if (error) {
+          say('aMsg', error.message, true);
+          return;
+        }
+        if (!data.session) {
+          say('aMsg', 'Cuenta creada. Confirmá tu email y después ingresá.');
+          return;
+        }
+        await abrir(data.session, true);
+        return;
+      }
+
+      const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+      if (error) {
+        say('aMsg', 'Email o contraseña incorrectos.', true);
+        return;
+      }
+      await abrir(data.session, true);
+    };
+
+    q('olvide').onclick = async () => {
+      const email = q('aMail').value.trim();
+      if (!email) {
+        say('aMsg', 'Escribí tu email arriba.', true);
+        return;
+      }
+      await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin });
+      say('aMsg', 'Te enviamos un email para cambiar la contraseña.');
+    };
+
+    sb.auth.onAuthStateChange(async ev => {
+      if (ev === 'PASSWORD_RECOVERY') {
+        const p = prompt('Nueva contraseña (mínimo 6 caracteres)');
+        if (p && p.length >= 6) {
+          await sb.auth.updateUser({ password: p });
+          await salir('Contraseña cambiada. Ingresá con la nueva.');
+        }
+      }
+    });
+
+    if (q('pagar')) {
+      q('pagar').onclick = async () => {
+        const { data } = await sb.auth.getSession();
+        if (!data.session) {
+          vista('auth');
+          return;
+        }
+        say('pMsg', 'Abriendo Mercado Pago...');
+        try {
+          const r = await fetch('/.netlify/functions/crear-pago', {
+            method: 'POST',
+            headers: { Authorization: 'Bearer ' + data.session.access_token }
+          });
+          const j = await r.json();
+          if (!r.ok || !j.init_point) throw new Error(j.error || 'error');
+          location.href = j.init_point;
+        } catch (e) {
+          say('pMsg', 'No se pudo iniciar el pago: ' + e.message, true);
+        }
+      };
+    }
+
+    q('actualizar').onclick = async () => {
+      const { data } = await sb.auth.getSession();
+      if (!data.session) return;
+      await revisar(data.session.user.id);
+      if (!q('payBox').hidden) {
+        say('pMsg', 'Tu cuenta todavía no figura activa. Si ya pagaste, avisanos por WhatsApp.', true);
+      }
+    };
+
+    q('salir').onclick = () => salir();
+
+    (async () => {
+      const { data } = await sb.auth.getSession();
+      if (data.session) abrir(data.session, false);
+      else vista('auth');
+    })();
+  </script>
+</body>
+</html>
