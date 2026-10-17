@@ -305,10 +305,9 @@ $('limpiarTodo').onclick=()=>{
   Object.values(FIRMAS).forEach(f=>f.borrar());toast('Datos limpios (el hospital se mantiene).');
 };
 </script>
+<script src="config.js"></script>
 <script>
 // ===== Cuentas y suscripción =====
-const SB_URL='https://TU-PROYECTO.supabase.co', SB_KEY='TU_ANON_KEY', PRECIO='ARS 15.000 (pago único)';
-const MODO_PAGO='mp', WHATSAPP='549XXXXXXXXXX'; // 'mp' = cobro automático con Mercado Pago. 'manual' = cobrás vos y activás a mano. WHATSAPP: código de país + área + número, sin + ni espacios (ej. 5492614123456)
 const sb=supabase.createClient(SB_URL,SB_KEY);
 const q=id=>document.getElementById(id);
 let modo='in',poll=null;
@@ -356,8 +355,9 @@ q('aGo').onclick=async()=>{
 q('olvide').onclick=async()=>{
   const email=q('aMail').value.trim();
   if(!email){say('aMsg','Escribí tu email arriba.',true);return}
-  await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin});
-  say('aMsg','Te enviamos un email para cambiar la contraseña.');
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin});
+  if(error){say('aMsg',/rate limit/i.test(error.message)?'Se enviaron demasiados correos. Esperá un rato y probá de nuevo.':'No se pudo enviar el correo: '+error.message,true);return}
+  say('aMsg','Si el email existe, te enviamos un correo para cambiar la contraseña. Revisá también spam.');
 };
 sb.auth.onAuthStateChange(async ev=>{
   if(ev==='PASSWORD_RECOVERY'){
@@ -383,6 +383,7 @@ q('actualizar').onclick=async()=>{
   if(!q('payBox').hidden)say('pMsg','Tu cuenta todavía no figura activa. Si ya pagaste, avisanos por WhatsApp.',true);
 };
 q('salir').onclick=()=>salir();
+if(/TU-PROYECTO|TU_ANON_KEY/.test(SB_URL+SB_KEY))say('aMsg','Falta completar config.js con los datos de Supabase.',true);
 (async()=>{const {data}=await sb.auth.getSession();if(data.session)abrir(data.session,false);else vista('auth')})();
 </script>
 </body>
