@@ -129,7 +129,7 @@ const T={
  dl:id=>`<section><button class="btn big" data-pdf="${id}" type="button">Descargar PDF</button></section>`
 };
 const EST=`<section><h2>Estudios médicos</h2><input type="text" id="buscar" placeholder="Buscar estudio (ej. ecografía, sangre)" aria-label="Buscar estudio"><div class="row"><button class="btn2 sm" id="tAll" type="button">Minimizar todas</button></div><div id="estudios"></div><div class="sel" id="sel"></div><div class="add"><label>¿Falta un estudio? Agregalo en su categoría</label><div class="grid"><div><select id="nCat" aria-label="Categoría"></select></div><div><input type="text" id="nEst" placeholder="Nombre del estudio" aria-label="Nombre del estudio"></div><button class="btn2" id="nAdd" type="button">Agregar estudio</button></div></div></section>`;
-const CERT=`<section><h2>Certificado médico</h2><div class="grid"><div><label for="cTipo">Tipo de certificado</label><input type="text" id="cTipo" placeholder="Ej.: Certificado de reposo"></div><div><label for="cDias">Días (opcional)</label><input type="number" id="cDias" min="1" max="365" inputmode="numeric"></div></div></section>`;
+const CERT=`<section><h2>Certificado médico</h2><div class="grid"><div><label for="cDias">Días (opcional)</label><input type="number" id="cDias" min="1" max="365" inputmode="numeric"></div></div></section>`;
 $('p-ped').innerHTML=EST+T.txt('ped','Indicaciones adicionales (opcional)','Preparación, urgencia, diagnóstico presuntivo...')+T.firma('ped')+T.dl('ped');
 $('p-hc').innerHTML=T.txt('hc','Historia clínica','Motivo de consulta, antecedentes, examen físico, diagnóstico, indicaciones...')+T.firma('hc')+T.dl('hc');
 $('p-cert').innerHTML=CERT+T.txt('cert','Texto del certificado','Ej.: Se certifica que el paciente se encuentra bajo tratamiento y debe guardar reposo...')+T.firma('cert')+T.dl('cert');
@@ -269,7 +269,7 @@ async function generarPDF(t){
   const txt=$('t-'+t).value.trim();let titulo,secs;
   if(t==='ped'){if(!sel.size)return toast('Elegí al menos un estudio.',1);titulo='Pedido de estudios médicos';secs=[['Estudios solicitados',[...sel].map(e=>'- '+e)]];if(txt)secs.push(['Indicaciones',[txt]])}
   else if(t==='hc'){if(!txt)return toast('Escribí o dictá la historia clínica.',1);titulo='Historia clínica';secs=[['Detalle',[txt]]]}
-  else{if(!txt)return toast('Escribí o dictá el texto del certificado.',1);titulo=$('cTipo').value.trim();if(!titulo)return toast('Escribí el tipo de certificado.',1);titulo=titulo[0].toUpperCase()+titulo.slice(1);const d=$('cDias').value;secs=[['Certificado',[txt]]];if(d)secs.push(['Días',[d+(d==1?' día':' días')]])}
+  else{if(!txt)return toast('Escribí o dictá el texto del certificado.',1);titulo='Certificado médico';const d=$('cDias').value;secs=[['Certificado',[txt]]];if(d)secs.push(['Días',[d+(d==1?' día':' días')]])}
   const fm=FIRMAS[t].get();if(!fm)return toast('Falta la firma digital.',1);
   try{
     const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'mm',format:'a4'}),W=210,M=18;let y;
@@ -300,9 +300,9 @@ $('limpiarTodo').onclick=()=>{
   const b=$('limpiarTodo');
   if(!armado){b.textContent='¿Seguro? Tocá de nuevo';armado=setTimeout(()=>{armado=null;b.textContent='Limpiar todo'},4000);return}
   clearTimeout(armado);armado=null;b.textContent='Limpiar todo';detener();
-  ['nombre','afiliado','dni','os','t-ped','t-hc','t-cert','cDias','cTipo','buscar','nEst'].forEach(id=>{$(id).value=''});
+  ['nombre','afiliado','dni','os','t-ped','t-hc','t-cert','cDias','buscar','nEst'].forEach(id=>{$(id).value=''});
   $('fecha').value=hoy();sel.clear();renderEst();resumen();
-  Object.values(FIRMAS).forEach(f=>f.borrar());toast('Datos limpios (el hospital se mantiene).');
+  toast('Datos limpios (el hospital y las firmas se mantienen).');
 };
 </script>
 <script src="/config.js"></script>
