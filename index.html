@@ -25,16 +25,20 @@ a{color:inherit}
 .btn.alt{background:transparent;color:var(--tx);box-shadow:inset 0 0 0 2px var(--acc)}.btn.alt:hover{background:var(--soft)}
 nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--bd);padding-top:env(safe-area-inset-top,0px)}
 nav .w{display:flex;justify-content:space-between;align-items:center;height:62px}
+nav .links{display:flex;align-items:center;gap:22px;font-size:14px;font-weight:600;color:var(--mut)}nav .links a{text-decoration:none}nav .links a:hover{color:var(--pri)}
 .logo{font-size:23px;font-weight:700;color:var(--pri);text-decoration:none}
 nav .btn{padding:9px 18px;font-size:15px}
-.hero{padding:60px 0 80px;background:radial-gradient(900px 420px at 85% 0,var(--soft),transparent 70%)}
+.hero{position:relative;isolation:isolate;overflow:hidden;padding:60px 0 80px;background:radial-gradient(900px 420px at 85% 0,var(--soft),transparent 70%)}
+.hero:before,.hero:after{content:"";position:absolute;z-index:-1;border-radius:50%;pointer-events:none}.hero:before{width:380px;height:380px;right:-110px;top:130px;border:1px solid color-mix(in srgb,var(--acc) 28%,transparent);box-shadow:0 0 0 32px color-mix(in srgb,var(--acc) 5%,transparent),0 0 0 72px color-mix(in srgb,var(--acc) 4%,transparent);animation:orbit 24s linear infinite}.hero:after{width:14px;height:14px;right:15%;top:22%;background:var(--acc);box-shadow:0 0 30px var(--acc);animation:float 4s ease-in-out infinite}
 .hero .w{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
 h1{font-size:clamp(36px,5.4vw,60px);line-height:1.04;font-weight:700}
 .lead{font-size:19px;color:var(--mut);max-width:34em;margin:20px 0 28px}
 .cta{display:flex;flex-wrap:wrap;gap:12px}
 .small{font-size:14px;color:var(--mut);margin-top:16px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--bd);border-radius:999px;background:color-mix(in srgb,var(--bg) 78%,transparent);color:var(--pri);font-size:13px;font-weight:600;margin-bottom:18px}.eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 15%,transparent)}
 /* hoja de ejemplo: la animación se reproduce una sola vez */
-.sheet{position:relative;background:#fff;color:#12303B;border-radius:12px;box-shadow:0 24px 60px rgba(10,63,85,.22);max-width:380px;margin:0 auto;width:100%;transform:rotate(1.2deg)}
+.showcase{position:relative;max-width:430px;margin:0 auto;width:100%;padding:20px 22px 26px}.showcase:before{content:"";position:absolute;inset:12% 6% 8%;border-radius:50%;background:radial-gradient(ellipse,var(--acc) 0,transparent 68%);opacity:.13;filter:blur(20px)}
+.sheet{position:relative;background:#fff;color:#12303B;border-radius:12px;box-shadow:0 24px 60px rgba(10,63,85,.22);max-width:380px;margin:0 auto;width:100%;transform:rotate(1.2deg);animation:levitate 6s ease-in-out infinite}
 .sh-top{background:#0F5B7A;color:#fff;font:700 17px "Bricolage Grotesque",sans-serif;padding:16px 18px;border-radius:12px 12px 0 0}
 .sh-body{padding:18px 18px 22px;font-size:14px}
 .sh-t{font-weight:700;margin:0 0 10px;font-size:15px}
@@ -46,18 +50,21 @@ h1{font-size:clamp(36px,5.4vw,60px);line-height:1.04;font-weight:700}
 .pill{position:absolute;background:#fff;color:#12303B;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;box-shadow:0 8px 22px rgba(10,63,85,.25);animation:in .5s both}
 .mic{top:-14px;right:-8px;animation-delay:.3s}.mic i{display:inline-block;width:9px;height:9px;border-radius:50%;background:#B3261E;margin-right:7px;animation:pulse 1.2s infinite}
 .pdf{bottom:-14px;left:-10px;background:#2AA89B;color:#06302c;animation-delay:4.6s}
+.secure{right:-8px;bottom:50px;animation-delay:1.8s}.secure b{color:#2AA89B;margin-right:5px}
 @keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes draw{to{stroke-dashoffset:0}}
 @keyframes pulse{50%{opacity:.3}}
+@keyframes levitate{50%{transform:translateY(-9px) rotate(.2deg)}}@keyframes float{50%{transform:translateY(-12px)}}@keyframes orbit{to{transform:rotate(360deg)}}
 section.b{padding:72px 0}
 h2{font-size:clamp(28px,4vw,40px);line-height:1.1;margin-bottom:34px;max-width:18em}
-.rows>div{display:grid;grid-template-columns:1fr 1.5fr;gap:28px;padding:22px 0;border-top:1px solid var(--bd)}
-.rows h3{font-size:21px;font-weight:600}.rows p{margin:0;color:var(--mut)}
+.rows{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.rows>div{position:relative;overflow:hidden;min-height:190px;padding:24px;border:1px solid var(--bd);border-radius:18px;background:color-mix(in srgb,var(--bg) 92%,var(--soft));transition:transform .25s,box-shadow .25s,border-color .25s}.rows>div:hover{transform:translateY(-5px);border-color:var(--acc);box-shadow:0 14px 36px rgba(10,63,85,.1)}
+.rows h3{font-size:20px;font-weight:600;margin:14px 0 7px}.rows p{margin:0;color:var(--mut);font-size:15px}.ico{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:var(--soft);color:var(--pri)}.ico svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:28px;counter-reset:s}
-ol li{counter-increment:s;border-top:3px solid var(--acc);padding-top:16px}
+ol li{counter-increment:s;border-top:3px solid var(--acc);padding-top:16px;transition:transform .2s}ol li:hover{transform:translateY(-4px)}
 ol li::before{content:counter(s);display:block;font:700 34px "Bricolage Grotesque",sans-serif;color:var(--pri);margin-bottom:6px}
 ol h3{font-size:20px;margin-bottom:6px}ol p{margin:0;color:var(--mut)}
 .priv{background:var(--band)}
+.priv .w{position:relative}.priv .w:after{content:"✓";position:absolute;right:8%;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:88px;height:88px;border-radius:28px;background:color-mix(in srgb,var(--acc) 16%,transparent);color:var(--acc);font-size:42px;font-weight:700;box-shadow:0 0 0 14px color-mix(in srgb,var(--acc) 6%,transparent)}
 .priv p{font-size:20px;max-width:36em;margin:0}
 .price{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
 .big{font:700 clamp(38px,6vw,64px)/1 "Bricolage Grotesque",sans-serif;letter-spacing:-.03em;color:var(--pri);margin:6px 0 18px}
@@ -71,20 +78,24 @@ details p{margin:0 0 16px;color:var(--mut);max-width:44em}
 footer{padding:36px 0 calc(40px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--bd);font-size:14px;color:var(--mut)}
 footer .w{display:grid;gap:10px}
 @media(max-width:780px){.hero .w,.price,.rows>div,ol{grid-template-columns:1fr}.hero{padding-top:36px}.sheet{transform:none}}
+@media(max-width:780px){.rows{grid-template-columns:repeat(2,1fr)}.priv .w:after{right:20px;top:0;transform:none;width:54px;height:54px;font-size:26px;border-radius:18px}.priv h2,.priv p{max-width:calc(100% - 65px)}nav .links>a:not(.btn){display:none}}
+@media(max-width:500px){.rows{grid-template-columns:1fr}.showcase{padding:14px 14px 24px}.mic{right:0}.secure{right:0}.pdf{left:0}}
+@media(prefers-reduced-motion:no-preference){.reveal{opacity:0;transform:translateY(18px);transition:opacity .65s ease,transform .65s cubic-bezier(.2,.7,.2,1)}.reveal.visible{opacity:1;transform:none}.rows>div:nth-child(2){transition-delay:.06s}.rows>div:nth-child(3){transition-delay:.12s}.rows>div:nth-child(4){transition-delay:.04s}.rows>div:nth-child(5){transition-delay:.1s}.rows>div:nth-child(6){transition-delay:.16s}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}.sig path{stroke-dashoffset:0}}
 </style>
 </head>
 <body>
-<nav><div class="w"><a class="logo" href="#top">HistoriaYa</a><a class="btn" href="/app/">Ingresar</a></div></nav>
+<nav><div class="w"><a class="logo" href="#top">HistoriaYa</a><div class="links"><a href="#que-hace">Cómo funciona</a><a href="#precio">Plan</a><a class="btn" href="/app/">Ingresar</a></div></div></nav>
 
 <header class="hero" id="top"><div class="w">
 <div>
+<div class="eyebrow"><i></i>Documentación médica, más simple</div>
 <h1>Pedidos, historia clínica y certificados, firmados y en PDF en minutos</h1>
 <p class="lead">Elegí los estudios, escribí o dictá con la voz, firmá y descargá el documento con el nombre de tu hospital. Desde el celular o la computadora, sin instalar nada.</p>
 <div class="cta"><a class="btn" href="/app/">Crear mi cuenta</a><a class="btn alt" data-wa="Hola, quiero consultar por HistoriaYa" href="#">Escribinos por WhatsApp</a></div>
 <p class="small">Hecho para médicos y equipos de salud de Argentina.</p>
 </div>
-<div class="sheet" aria-hidden="true">
+<div class="showcase" aria-hidden="true"><div class="sheet">
 <div class="pill mic"><i></i>Dictando</div>
 <div class="sh-top">Tu hospital</div>
 <div class="sh-body">
@@ -95,21 +106,21 @@ footer .w{display:grid;gap:10px}
 <div class="sh-sign">Firma - Dr/a. - Matrícula</div>
 </div>
 <div class="pill pdf">PDF listo</div>
-</div>
+</div><div class="pill secure"><b>✓</b>Datos en tu dispositivo</div></div>
 </div></header>
 
-<section class="b" id="que-hace"><div class="w">
+<section class="b" id="que-hace"><div class="w reveal">
 <h2>Todo lo del consultorio que hoy se escribe a mano, en un solo lugar</h2>
 <div class="rows">
-<div><h3>Pedidos de estudios</h3><p>Elegí entre unos 55 estudios organizados por categoría, buscá por nombre y agregá los que falten. Cada categoría se puede minimizar para ver menos de un vistazo.</p></div>
-<div><h3>Historia clínica</h3><p>Escribí el detalle de la consulta o dictalo con la voz, y queda ordenado en un PDF con los datos del paciente.</p></div>
-<div><h3>Certificados médicos</h3><p>Escribí qué certificado necesitás y su texto, con los días si corresponde. Sin plantillas que no se ajustan a tu caso.</p></div>
-<div><h3>Tu firma digital</h3><p>Dibujala con el dedo o el mouse, o subí un archivo PDF, PNG o JPG que ya la tenga. La app recorta los márgenes y la ubica sola.</p></div>
-<div><h3>Tu hospital en el encabezado</h3><p>El nombre de tu institución reemplaza al de la app en cada documento, y la app lo recuerda para la próxima vez.</p></div>
-<div><h3>Paciente cargado una sola vez</h3><p>Nombre, DNI, afiliado y obra social valen para el pedido, la historia clínica y el certificado.</p></div>
+<div><span class="ico"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg></span><h3>Pedidos de estudios</h3><p>Elegí entre 51 estudios organizados por categoría, buscá por nombre y agregá los que falten. Cada categoría se puede minimizar para ver menos de un vistazo.</p></div>
+<div><span class="ico"><svg viewBox="0 0 24 24"><path d="M5 3h14v18H5zM8 8h8M8 12h8M8 16h5"/></svg></span><h3>Historia clínica</h3><p>Escribí el detalle de la consulta o dictalo con la voz, y queda ordenado en un PDF con los datos del paciente.</p></div>
+<div><span class="ico"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M6 6l12 12M18 6 6 18"/></svg></span><h3>Certificados médicos</h3><p>Escribí qué certificado necesitás y su texto, con los días si corresponde. Sin plantillas que no se ajustan a tu caso.</p></div>
+<div><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 17c3-7 5-8 6-5s2 6 4 3 3-7 6-5M4 21h16"/></svg></span><h3>Tu firma digital</h3><p>Dibujala con el dedo o el mouse, o subí un archivo PDF, PNG o JPG que ya la tenga. La app recorta los márgenes y la ubica sola.</p></div>
+<div><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 21V7l8-4 8 4v14zM8 21v-7h8v7M8 9h.01M12 9h.01M16 9h.01"/></svg></span><h3>Tu hospital en el encabezado</h3><p>El nombre de tu institución reemplaza al de la app en cada documento, y la app lo recuerda para la próxima vez.</p></div>
+<div><span class="ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21v-2a7 7 0 0 1 14 0v2M17 11a4 4 0 0 0 0-7M18 14a6 6 0 0 1 4 5v2"/></svg></span><h3>Paciente cargado una sola vez</h3><p>Nombre, DNI, afiliado y obra social valen para el pedido, la historia clínica y el certificado.</p></div>
 </div></div></section>
 
-<section class="b" style="padding-top:0"><div class="w">
+<section class="b" style="padding-top:0"><div class="w reveal">
 <h2>De la consulta al PDF en tres pasos</h2>
 <ol>
 <li><h3>Cargá al paciente</h3><p>Completás sus datos y el nombre del hospital una sola vez.</p></li>
@@ -117,12 +128,12 @@ footer .w{display:grid;gap:10px}
 <li><h3>Firmá y descargá</h3><p>Agregás tu firma y bajás el PDF listo para imprimir o enviar.</p></li>
 </ol></div></section>
 
-<section class="b priv"><div class="w">
+<section class="b priv"><div class="w reveal">
 <h2>Los datos de tus pacientes no se guardan en nuestros servidores</h2>
 <p>El documento se arma en tu dispositivo. Nosotros guardamos solo los datos de tu cuenta: email, nombre y matrícula.</p>
 </div></section>
 
-<section class="b" id="precio"><div class="w price">
+<section class="b" id="precio"><div class="w price reveal">
 <div>
 <h2 style="margin-bottom:8px">Un solo plan, sin letra chica</h2>
 <div class="big" id="precio-v">$ 80.000 por año</div>
@@ -140,7 +151,7 @@ footer .w{display:grid;gap:10px}
 <section class="b" style="padding-top:0" id="preguntas"><div class="w">
 <h2>Preguntas frecuentes</h2>
 <details><summary>¿Tengo que instalar algo?</summary><p>No. Funciona desde el navegador del celular o de la computadora.</p></details>
-<details><summary>¿Cómo pago y cuándo se activa mi cuenta?</summary><p>Creás tu cuenta, pagás con Mercado Pago desde el botón que te muestra la app y nos avisás por WhatsApp. Activamos tu acceso apenas confirmamos el pago.</p></details>
+<details><summary>¿Cómo pago y cuándo se activa mi cuenta?</summary><p>El medio de pago y la activación dependen de la modalidad vigente. Si necesitás ayuda, escribinos por WhatsApp desde esta página.</p></details>
 <details><summary>¿Funciona el dictado por voz en cualquier dispositivo?</summary><p>Depende del navegador. Funciona mejor en Chrome y Edge. Si en el tuyo no está disponible, podés usar el micrófono del teclado del celular y el texto queda igual en el documento.</p></details>
 <details><summary>¿Mi firma digital tiene validez legal?</summary><p>La app inserta en el PDF la imagen de tu firma. La validez de cada documento depende de las normas de tu institución y de tu jurisdicción, así que consultá cómo se aplica en tu caso.</p></details>
 <details><summary>¿Puedo compartir mi cuenta con un colega?</summary><p>No. Cada cuenta permite una sola sesión activa a la vez, y el PDF lleva el nombre y la matrícula del médico titular.</p></details>
@@ -153,6 +164,8 @@ footer .w{display:grid;gap:10px}
 </div></footer>
 
 <script>
+const revealItems=document.querySelectorAll('.reveal');
+if('IntersectionObserver'in window&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target)}}),{threshold:.12});revealItems.forEach(item=>observer.observe(item))}else revealItems.forEach(item=>item.classList.add('visible'));
 const _wa=(typeof WHATSAPP!=='undefined')?WHATSAPP:'';
 document.querySelectorAll('[data-wa]').forEach(a=>{a.href='https://wa.me/'+_wa+'?text='+encodeURIComponent(a.dataset.wa);a.target='_blank';a.rel='noopener'});
 if(typeof PRECIO!=='undefined')document.getElementById('precio-v').textContent=PRECIO;
