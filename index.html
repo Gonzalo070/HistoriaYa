@@ -3,392 +3,159 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>HistoriaYa</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<title>HistoriaYa: pedidos, historia clínica y certificados con firma digital</title>
+<meta name="description" content="Armá pedidos de estudios, historias clínicas y certificados médicos en PDF, con dictado por voz y tu firma digital. Desde el celular o la computadora.">
+<meta property="og:title" content="HistoriaYa">
+<meta property="og:description" content="Pedidos de estudios, historia clínica y certificados médicos en PDF, con dictado por voz y firma digital.">
+<meta name="theme-color" content="#0F5B7A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A9%BA%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap">
+<script src="/config.js"></script>
 <style>
-:root{--pri:#0F5B7A;--dark:#0A3F55;--acc:#2AA89B;--soft:#E6F4F1;--bg:#F3F7F8;--card:#fff;--tx:#12303B;--mut:#5B747E;--bd:#D3E2E6;--err:#B3261E}
-@media(prefers-color-scheme:dark){:root{--pri:#2C8DB3;--dark:#1E7396;--acc:#3CC5B6;--soft:#12363A;--bg:#0C1B21;--card:#122730;--tx:#E4F0F3;--mut:#93AEB7;--bd:#244350;color-scheme:dark}}
-*{box-sizing:border-box}[hidden]{display:none!important}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif}
-header{background:linear-gradient(120deg,var(--pri),var(--dark),var(--pri));background-size:220% 220%;animation:flow 14s ease infinite;color:#fff;padding:calc(18px + env(safe-area-inset-top,0px)) 20px 18px}
-header .in{max-width:800px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:12px}
-header h1{margin:0;font-size:26px;letter-spacing:-.3px}header p{margin:2px 0 0;font-size:14px;opacity:.85}
-main{max-width:800px;margin:auto;padding:16px 16px 60px;display:grid;gap:14px}
-section{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px;box-shadow:0 4px 18px rgba(15,91,122,.07);transition:box-shadow .25s}
-section:hover{box-shadow:0 8px 26px rgba(15,91,122,.14)}
-h2{margin:0 0 12px;font-size:17px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}.top h2{margin:0}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:560px){.grid{grid-template-columns:1fr}}
-.full{grid-column:1/-1}
-label{display:block;font-size:13px;font-weight:500;color:var(--mut);margin-bottom:4px}
-input[type=text],input[type=date],input[type=email],input[type=password],input[type=number],select,textarea{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;transition:border-color .2s,box-shadow .2s}
-textarea{min-height:150px;resize:vertical}
-:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
-input:focus,textarea:focus,select:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(42,168,155,.2);outline:0}
-button{font:inherit}
-.btn,.btn2{display:inline-block;font-weight:600;border:0;border-radius:10px;padding:10px 16px;cursor:pointer;text-align:center;color:var(--tx);transition:transform .12s,background .2s,box-shadow .2s}
-.btn{background:var(--pri);color:#fff}.btn:hover{background:var(--dark);box-shadow:0 6px 16px rgba(10,63,85,.3);transform:translateY(-1px)}
-.btn2{background:var(--soft);border:1px solid var(--acc)}.btn2:hover{transform:translateY(-1px)}
-.btn:active,.btn2:active{transform:scale(.97)}
-.sm{padding:6px 12px;font-size:14px}.big{width:100%;padding:14px;font-size:16px}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
-.mic.on{background:var(--err);color:#fff;border-color:var(--err);animation:pulse 1.3s infinite}
-.hint{font-size:13px;color:var(--mut);margin:6px 0 0}
-.tabs{display:flex;gap:6px;position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0}
-.tab{flex:1;padding:11px 6px;border:1px solid var(--bd);border-radius:12px;background:var(--card);color:var(--tx);font-weight:600;cursor:pointer;transition:all .25s}
-.tab.on{background:var(--pri);border-color:var(--pri);color:#fff;transform:translateY(-1px);box-shadow:0 6px 16px rgba(15,91,122,.3)}
-.panel{display:grid;gap:14px;animation:in .4s ease}
-details.cat{border-bottom:1px solid var(--bd);padding:4px 0}
-details.cat summary{cursor:pointer;font-weight:600;color:var(--pri);padding:8px 0;list-style:none;display:flex;justify-content:space-between;gap:8px}
-details.cat summary::-webkit-details-marker{display:none}
-details.cat summary::before{content:'\25B8';display:inline-block;margin-right:8px;transition:transform .2s}
-details.cat[open] summary::before{transform:rotate(90deg)}
-details.cat summary span:first-child{flex:1}
-.cnt{font-weight:400;font-size:13px;color:var(--mut)}
-.chips{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0 10px}
-.chip{position:relative;margin:0}.chip input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
-.chip span{display:block;padding:6px 12px;border:1px solid var(--bd);border-radius:999px;font-size:14px;color:var(--tx);background:var(--bg);transition:all .2s}
-.chip:hover span{border-color:var(--acc)}
-.chip input:checked+span{background:var(--pri);border-color:var(--pri);color:#fff;animation:pop .28s}
-.sel{margin-top:12px;padding:8px 12px;background:var(--soft);border-radius:10px;font-size:14px}
-.add{margin-top:14px;padding-top:14px;border-top:1px solid var(--bd)}.add .grid{grid-template-columns:1fr 1.4fr auto;align-items:end}@media(max-width:560px){.add .grid{grid-template-columns:1fr}}
-.cv{width:100%;height:170px;background:#fff;border:1px dashed var(--acc);border-radius:10px;touch-action:none;display:block}
-#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);background:var(--dark);color:#fff;padding:12px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:all .3s;z-index:20;max-width:90%}
-#toast.show{opacity:1;transform:translate(-50%,0)}#toast.err{background:var(--err)}
-@keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-@keyframes pop{50%{transform:scale(1.12)}}
-@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(179,38,30,.2)}}
-@keyframes flow{50%{background-position:100% 50%}}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+:root{--pri:#0F5B7A;--dark:#0A3F55;--acc:#2AA89B;--soft:#E6F4F1;--bg:#fff;--tx:#12303B;--mut:#4D6872;--bd:#D3E2E6;--band:#E6F4F1}
+@media(prefers-color-scheme:dark){:root{--pri:#2C8DB3;--dark:#1E7396;--acc:#3CC5B6;--soft:#12363A;--bg:#0C1B21;--tx:#E4F0F3;--mut:#9BB5BD;--bd:#244350;--band:#102A31;color-scheme:dark}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font:17px/1.6 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3,.logo{font-family:"Bricolage Grotesque",Figtree,system-ui,sans-serif;letter-spacing:-.025em;margin:0}
+.w{max-width:1040px;margin:0 auto;padding:0 20px}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--acc);outline-offset:3px;border-radius:6px}
+.btn{display:inline-block;padding:13px 22px;border-radius:999px;font-weight:600;text-decoration:none;background:var(--pri);color:#fff;transition:background .2s,transform .12s}
+.btn:hover{background:var(--dark)}.btn:active{transform:scale(.97)}
+.btn.alt{background:transparent;color:var(--tx);box-shadow:inset 0 0 0 2px var(--acc)}.btn.alt:hover{background:var(--soft)}
+nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--bd);padding-top:env(safe-area-inset-top,0px)}
+nav .w{display:flex;justify-content:space-between;align-items:center;height:62px}
+.logo{font-size:23px;font-weight:700;color:var(--pri);text-decoration:none}
+nav .btn{padding:9px 18px;font-size:15px}
+.hero{padding:60px 0 80px;background:radial-gradient(900px 420px at 85% 0,var(--soft),transparent 70%)}
+.hero .w{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+h1{font-size:clamp(36px,5.4vw,60px);line-height:1.04;font-weight:700}
+.lead{font-size:19px;color:var(--mut);max-width:34em;margin:20px 0 28px}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.small{font-size:14px;color:var(--mut);margin-top:16px}
+/* hoja de ejemplo: la animación se reproduce una sola vez */
+.sheet{position:relative;background:#fff;color:#12303B;border-radius:12px;box-shadow:0 24px 60px rgba(10,63,85,.22);max-width:380px;margin:0 auto;width:100%;transform:rotate(1.2deg)}
+.sh-top{background:#0F5B7A;color:#fff;font:700 17px "Bricolage Grotesque",sans-serif;padding:16px 18px;border-radius:12px 12px 0 0}
+.sh-body{padding:18px 18px 22px;font-size:14px}
+.sh-t{font-weight:700;margin:0 0 10px;font-size:15px}
+.sh-meta{display:flex;gap:8px;padding-bottom:10px;border-bottom:2px solid #2AA89B;margin-bottom:12px}
+.sh-l{padding:3px 0;animation:in .5s both}.l1{animation-delay:1s}.l2{animation-delay:1.6s}.l3{animation-delay:2.2s}
+.sig{display:block;width:150px;height:46px;margin:16px 0 2px;fill:none;stroke:#0A3F55;stroke-width:2.2;stroke-linecap:round}
+.sig path{stroke-dasharray:300;stroke-dashoffset:300;animation:draw 1.5s 3s forwards}
+.sh-sign{border-top:1px solid #12303B;width:170px;font-size:11px;padding-top:3px}
+.pill{position:absolute;background:#fff;color:#12303B;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;box-shadow:0 8px 22px rgba(10,63,85,.25);animation:in .5s both}
+.mic{top:-14px;right:-8px;animation-delay:.3s}.mic i{display:inline-block;width:9px;height:9px;border-radius:50%;background:#B3261E;margin-right:7px;animation:pulse 1.2s infinite}
+.pdf{bottom:-14px;left:-10px;background:#2AA89B;color:#06302c;animation-delay:4.6s}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pulse{50%{opacity:.3}}
+section.b{padding:72px 0}
+h2{font-size:clamp(28px,4vw,40px);line-height:1.1;margin-bottom:34px;max-width:18em}
+.rows>div{display:grid;grid-template-columns:1fr 1.5fr;gap:28px;padding:22px 0;border-top:1px solid var(--bd)}
+.rows h3{font-size:21px;font-weight:600}.rows p{margin:0;color:var(--mut)}
+ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:28px;counter-reset:s}
+ol li{counter-increment:s;border-top:3px solid var(--acc);padding-top:16px}
+ol li::before{content:counter(s);display:block;font:700 34px "Bricolage Grotesque",sans-serif;color:var(--pri);margin-bottom:6px}
+ol h3{font-size:20px;margin-bottom:6px}ol p{margin:0;color:var(--mut)}
+.priv{background:var(--band)}
+.priv p{font-size:20px;max-width:36em;margin:0}
+.price{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.big{font:700 clamp(38px,6vw,64px)/1 "Bricolage Grotesque",sans-serif;letter-spacing:-.03em;color:var(--pri);margin:6px 0 18px}
+ul.ok{list-style:none;margin:0 0 24px;padding:0}ul.ok li{padding:7px 0 7px 28px;position:relative;border-bottom:1px solid var(--bd)}
+ul.ok li::before{content:"✓";position:absolute;left:0;color:var(--acc);font-weight:700}
+details{border-top:1px solid var(--bd);padding:4px 0}details:last-of-type{border-bottom:1px solid var(--bd)}
+summary{cursor:pointer;font-weight:600;padding:14px 0;list-style:none;display:flex;justify-content:space-between;gap:16px}
+summary::-webkit-details-marker{display:none}summary::after{content:"+";font-size:22px;color:var(--acc);transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{margin:0 0 16px;color:var(--mut);max-width:44em}
+footer{padding:36px 0 calc(40px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--bd);font-size:14px;color:var(--mut)}
+footer .w{display:grid;gap:10px}
+@media(max-width:780px){.hero .w,.price,.rows>div,ol{grid-template-columns:1fr}.hero{padding-top:36px}.sheet{transform:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}.sig path{stroke-dashoffset:0}}
 </style>
 </head>
 <body>
-<header><div class="in"><div><h1>HistoriaYa</h1><p>Pedidos, historia clínica y certificados con firma digital</p></div><button class="btn2" id="salir" type="button" hidden>Salir</button></div></header>
-<main id="gate">
-<section id="authBox">
-<h2 id="aTit">Ingresar</h2>
-<div class="grid">
-<div class="full" id="reg" hidden><div class="grid"><div><label for="aNom">Nombre y apellido</label><input type="text" id="aNom"></div><div><label for="aMat">Matrícula profesional</label><input type="text" id="aMat"></div></div></div>
-<div class="full"><label for="aMail">Email</label><input type="email" id="aMail" autocomplete="email"></div>
-<div class="full"><label for="aPass">Contraseña</label><input type="password" id="aPass" autocomplete="current-password"></div>
+<nav><div class="w"><a class="logo" href="#top">HistoriaYa</a><a class="btn" href="/app/">Ingresar</a></div></nav>
+
+<header class="hero" id="top"><div class="w">
+<div>
+<h1>Pedidos, historia clínica y certificados, firmados y en PDF en minutos</h1>
+<p class="lead">Elegí los estudios, escribí o dictá con la voz, firmá y descargá el documento con el nombre de tu hospital. Desde el celular o la computadora, sin instalar nada.</p>
+<div class="cta"><a class="btn" href="/app/">Crear mi cuenta</a><a class="btn alt" data-wa="Hola, quiero consultar por HistoriaYa" href="#">Escribinos por WhatsApp</a></div>
+<p class="small">Hecho para médicos y equipos de salud de Argentina.</p>
 </div>
-<div class="row"><button class="btn" id="aGo" type="button">Ingresar</button><button class="btn2" id="aCambiar" type="button">Crear cuenta</button><button class="btn2" id="olvide" type="button">Olvidé mi contraseña</button></div>
-<div id="aMsg" role="status" style="margin-top:10px;font-size:14px"></div>
-</section>
-<section id="payBox" hidden>
-<h2>Activá tu acceso</h2>
-<p>Para usar HistoriaYa necesitás abonar el acceso. Precio: <b id="pPrecio"></b>.</p>
-<div class="row"><button class="btn" id="pagar" type="button">Pagar con Mercado Pago</button><button class="btn2" id="actualizar" type="button">Ya pagué, actualizar</button></div>
-<div id="pMsg" role="status" style="margin-top:10px;font-size:14px"></div>
-</section>
-</main>
-<main id="app" hidden>
-<section>
-<div class="top"><h2>Datos del paciente</h2><button class="btn2 sm" id="limpiarTodo" type="button">Limpiar todo</button></div>
-<div class="grid">
-<div class="full"><label for="hosp">Hospital o institución (aparece en el encabezado del PDF)</label><input type="text" id="hosp" autocomplete="organization"></div>
-<div class="full"><label for="nombre">Nombre y apellido</label><input type="text" id="nombre" autocomplete="off"></div>
-<div><label for="afiliado">Número de afiliado</label><input type="text" id="afiliado" inputmode="numeric"></div>
-<div><label for="dni">DNI</label><input type="text" id="dni" inputmode="numeric"></div>
-<div><label for="fecha">Fecha</label><input type="date" id="fecha"></div>
-<div><label for="os">Obra social</label><input type="text" id="os"></div>
+<div class="sheet" aria-hidden="true">
+<div class="pill mic"><i></i>Dictando</div>
+<div class="sh-top">Tu hospital</div>
+<div class="sh-body">
+<p class="sh-t">Pedido de estudios médicos</p>
+<div class="sh-meta"><span>Paciente:</span><b>María Gómez</b></div>
+<div class="sh-l l1">- Hemograma completo</div><div class="sh-l l2">- Glucemia</div><div class="sh-l l3">- Ecografía abdominal</div>
+<svg class="sig" viewBox="0 0 160 50"><path d="M5 36C20 4 30 46 45 26S70 8 82 30 112 42 126 16 146 26 156 20"/></svg>
+<div class="sh-sign">Firma - Dr/a. - Matrícula</div>
 </div>
-</section>
-<nav class="tabs" role="tablist"><button class="tab on" data-t="ped" type="button">Pedidos</button><button class="tab" data-t="hc" type="button">Historia clínica</button><button class="tab" data-t="cert" type="button">Certificados</button></nav>
-<div class="panel" id="p-ped"></div>
-<div class="panel" id="p-hc" hidden></div>
-<div class="panel" id="p-cert" hidden></div>
-</main>
-<div id="toast" role="status"></div>
+<div class="pill pdf">PDF listo</div>
+</div>
+</div></header>
+
+<section class="b" id="que-hace"><div class="w">
+<h2>Todo lo del consultorio que hoy se escribe a mano, en un solo lugar</h2>
+<div class="rows">
+<div><h3>Pedidos de estudios</h3><p>Elegí entre unos 55 estudios organizados por categoría, buscá por nombre y agregá los que falten. Cada categoría se puede minimizar para ver menos de un vistazo.</p></div>
+<div><h3>Historia clínica</h3><p>Escribí el detalle de la consulta o dictalo con la voz, y queda ordenado en un PDF con los datos del paciente.</p></div>
+<div><h3>Certificados médicos</h3><p>Escribí qué certificado necesitás y su texto, con los días si corresponde. Sin plantillas que no se ajustan a tu caso.</p></div>
+<div><h3>Tu firma digital</h3><p>Dibujala con el dedo o el mouse, o subí un archivo PDF, PNG o JPG que ya la tenga. La app recorta los márgenes y la ubica sola.</p></div>
+<div><h3>Tu hospital en el encabezado</h3><p>El nombre de tu institución reemplaza al de la app en cada documento, y la app lo recuerda para la próxima vez.</p></div>
+<div><h3>Paciente cargado una sola vez</h3><p>Nombre, DNI, afiliado y obra social valen para el pedido, la historia clínica y el certificado.</p></div>
+</div></div></section>
+
+<section class="b" style="padding-top:0"><div class="w">
+<h2>De la consulta al PDF en tres pasos</h2>
+<ol>
+<li><h3>Cargá al paciente</h3><p>Completás sus datos y el nombre del hospital una sola vez.</p></li>
+<li><h3>Elegí y dictá</h3><p>Marcá los estudios, o escribí la historia o el certificado. Si preferís, hablale al micrófono.</p></li>
+<li><h3>Firmá y descargá</h3><p>Agregás tu firma y bajás el PDF listo para imprimir o enviar.</p></li>
+</ol></div></section>
+
+<section class="b priv"><div class="w">
+<h2>Los datos de tus pacientes no se guardan en nuestros servidores</h2>
+<p>El documento se arma en tu dispositivo. Nosotros guardamos solo los datos de tu cuenta: email, nombre y matrícula.</p>
+</div></section>
+
+<section class="b" id="precio"><div class="w price">
+<div>
+<h2 style="margin-bottom:8px">Un solo plan, sin letra chica</h2>
+<div class="big" id="precio-v">$ 80.000 por año</div>
+<a class="btn" href="/app/">Crear mi cuenta</a> <a class="btn alt" data-wa="Hola, quiero contratar HistoriaYa" href="#" style="margin-left:6px">Consultar</a>
+</div>
+<ul class="ok">
+<li>Pedidos, historia clínica y certificados</li>
+<li>Dictado por voz en las tres pantallas</li>
+<li>Firma digital dibujada o subida como archivo</li>
+<li>Tu hospital en el encabezado de cada PDF</li>
+<li>Una cuenta por médico, con tu nombre y matrícula en la firma</li>
+</ul>
+</div></section>
+
+<section class="b" style="padding-top:0" id="preguntas"><div class="w">
+<h2>Preguntas frecuentes</h2>
+<details><summary>¿Tengo que instalar algo?</summary><p>No. Funciona desde el navegador del celular o de la computadora.</p></details>
+<details><summary>¿Cómo pago y cuándo se activa mi cuenta?</summary><p>Creás tu cuenta, pagás con Mercado Pago desde el botón que te muestra la app y nos avisás por WhatsApp. Activamos tu acceso apenas confirmamos el pago.</p></details>
+<details><summary>¿Funciona el dictado por voz en cualquier dispositivo?</summary><p>Depende del navegador. Funciona mejor en Chrome y Edge. Si en el tuyo no está disponible, podés usar el micrófono del teclado del celular y el texto queda igual en el documento.</p></details>
+<details><summary>¿Mi firma digital tiene validez legal?</summary><p>La app inserta en el PDF la imagen de tu firma. La validez de cada documento depende de las normas de tu institución y de tu jurisdicción, así que consultá cómo se aplica en tu caso.</p></details>
+<details><summary>¿Puedo compartir mi cuenta con un colega?</summary><p>No. Cada cuenta permite una sola sesión activa a la vez, y el PDF lleva el nombre y la matrícula del médico titular.</p></details>
+</div></section>
+
+<footer><div class="w">
+<div><b class="logo" style="font-size:18px">HistoriaYa</b></div>
+<div>Consultas: <a data-wa="Hola, quiero consultar por HistoriaYa" href="#">escribinos por WhatsApp</a></div>
+<div>HistoriaYa ayuda a redactar documentos. La responsabilidad profesional sobre su contenido es del médico que los firma.</div>
+</div></footer>
 
 <script>
-const ESTUDIOS={
-"Laboratorio":["Hemograma completo","Glucemia","Hepatograma","Colesterol y triglicéridos","Uremia y creatininemia","Orina completa","Hemoglobina glicosilada","Perfil tiroideo (TSH, T4)","Coagulograma","Ionograma","Vitamina D","Ferritina y hierro sérico","PSA","Hormonas","Urocultivo","Coprocultivo"],
-"Imágenes":["Radiografía de tórax","Radiografía de columna","Radiografía de extremidades","Ecografía abdominal","Ecografía ginecológica","Ecografía obstétrica","Ecografía renal","Ecografía tiroidea","Ecografía mamaria","Ecografía Doppler","Tomografía computada","Resonancia magnética","Mamografía","Densitometría ósea"],
-"Cardiología":["Electrocardiograma","Ergometría","Ecocardiograma","Holter de 24 horas","MAPA (presión arterial 24 hs)","Eco-Doppler cardíaco"],
-"Digestivo":["Videoendoscopia digestiva alta","Videocolonoscopia","Test de aliento","Sangre oculta en materia fecal"],
-"Ginecología y urología":["Papanicolaou y colposcopia","Citología mamaria","Espermograma","Uroflujometría"],
-"Neurología y otros":["Electroencefalograma","Electromiograma","Espirometría","Audiometría","Campo visual","Fondo de ojo","Polisomnografía"]
-};
-const $=id=>document.getElementById(id);
-const sel=new Set(),cerradas=new Set(),FIRMAS={};
-let extra={};try{extra=JSON.parse(localStorage.getItem('hy_extra')||'{}')}catch(_){}
-for(const [c,l] of Object.entries(extra))if(ESTUDIOS[c])l.forEach(e=>{if(!ESTUDIOS[c].includes(e))ESTUDIOS[c].push(e)});
-if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-function toast(t,err){const e=$('toast');e.textContent=(err?'':'✓ ')+t;e.className=err?'show err':'show';clearTimeout(toast.t);toast.t=setTimeout(()=>{e.className=''},3800)}
-const hoy=()=>{const t=new Date();return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0')};
-
-// ---- Plantillas de cada pantalla ----
-const T={
- txt:(id,tit,ph)=>`<section><h2>${tit}</h2><textarea id="t-${id}" aria-label="${tit}" placeholder="${ph}"></textarea><div class="row"><button class="btn2 mic" data-for="t-${id}" type="button">Dictar con la voz</button><button class="btn2" data-clear="t-${id}" type="button">Borrar texto</button></div><p class="hint" id="h-${id}"></p></section>`,
- firma:id=>`<section><h2>Firma digital</h2><canvas id="c-${id}" class="cv" aria-label="Área de firma"></canvas><div class="row"><label class="btn2" style="margin:0;color:var(--tx);font-size:16px">Subir firma (PDF, PNG, JPG...)<input type="file" accept="image/*,application/pdf" data-firma="${id}" hidden></label><button class="btn2" data-borrar="${id}" type="button">Borrar firma</button></div><p class="hint">Firmá con el dedo o el mouse, o subí un archivo que ya tenga tu firma digital.</p></section>`,
- dl:id=>`<section><button class="btn big" data-pdf="${id}" type="button">Descargar PDF</button></section>`
-};
-const EST=`<section><h2>Estudios médicos</h2><input type="text" id="buscar" placeholder="Buscar estudio (ej. ecografía, sangre)" aria-label="Buscar estudio"><div class="row"><button class="btn2 sm" id="tAll" type="button">Minimizar todas</button></div><div id="estudios"></div><div class="sel" id="sel"></div><div class="add"><label>¿Falta un estudio? Agregalo en su categoría</label><div class="grid"><div><select id="nCat" aria-label="Categoría"></select></div><div><input type="text" id="nEst" placeholder="Nombre del estudio" aria-label="Nombre del estudio"></div><button class="btn2" id="nAdd" type="button">Agregar estudio</button></div></div></section>`;
-const CERT=`<section><h2>Certificado médico</h2><div class="grid"><div><label for="cTipo">Tipo de certificado</label><input type="text" id="cTipo" placeholder="Ej.: Certificado de reposo"></div><div><label for="cDias">Días (opcional)</label><input type="number" id="cDias" min="1" max="365" inputmode="numeric"></div></div></section>`;
-$('p-ped').innerHTML=EST+T.txt('ped','Indicaciones adicionales (opcional)','Preparación, urgencia, diagnóstico presuntivo...')+T.firma('ped')+T.dl('ped');
-$('p-hc').innerHTML=T.txt('hc','Historia clínica','Motivo de consulta, antecedentes, examen físico, diagnóstico, indicaciones...')+T.firma('hc')+T.dl('hc');
-$('p-cert').innerHTML=CERT+T.txt('cert','Texto del certificado','Ej.: Se certifica que el paciente se encuentra bajo tratamiento y debe guardar reposo...')+T.firma('cert')+T.dl('cert');
-
-$('fecha').value=hoy();
-try{$('hosp').value=localStorage.getItem('hy_hosp')||''}catch(_){}
-$('hosp').oninput=()=>{try{localStorage.setItem('hy_hosp',$('hosp').value)}catch(_){}};
-
-// ---- Estudios (categorías con <details>) ----
-function actCont(){
-  document.querySelectorAll('#estudios details').forEach(d=>{
-    const n=d.querySelectorAll('input:checked').length,t=d.querySelectorAll('input').length;
-    d.querySelector('.cnt').textContent=t+' estudios'+(n?' - '+n+' elegido'+(n>1?'s':''):'');
-  });
-}
-function actBtn(){const ds=[...document.querySelectorAll('#estudios details')];$('tAll').textContent=ds.length&&ds.every(d=>!d.open)?'Expandir todas':'Minimizar todas'}
-function resumen(){$('sel').textContent=sel.size?sel.size+' elegido'+(sel.size>1?'s':'')+': '+[...sel].join(', '):'Todavía no elegiste estudios.'}
-function renderEst(){
-  const q=$('buscar').value.trim().toLowerCase(),box=$('estudios');box.innerHTML='';let any=false;
-  for(const [cat,list] of Object.entries(ESTUDIOS)){
-    const items=list.filter(e=>!q||e.toLowerCase().includes(q)||cat.toLowerCase().includes(q));
-    if(!items.length)continue;any=true;
-    const d=document.createElement('details');d.className='cat';d.open=!!q||!cerradas.has(cat);
-    d.addEventListener('toggle',()=>{if(!$('buscar').value.trim()){d.open?cerradas.delete(cat):cerradas.add(cat)}actBtn()});
-    const s=document.createElement('summary');
-    s.innerHTML='<span></span><span class="cnt"></span>';s.firstChild.textContent=cat;d.appendChild(s);
-    const w=document.createElement('div');w.className='chips';
-    items.forEach(e=>{
-      const l=document.createElement('label');l.className='chip';
-      const i=document.createElement('input');i.type='checkbox';i.checked=sel.has(e);
-      i.onchange=()=>{i.checked?sel.add(e):sel.delete(e);resumen();actCont()};
-      const sp=document.createElement('span');sp.textContent=e;l.append(i,sp);w.appendChild(l);
-    });
-    d.appendChild(w);box.appendChild(d);
-  }
-  if(!any)box.innerHTML='<p class="hint">No hay estudios con esa búsqueda.</p>';
-  actCont();actBtn();
-}
-Object.keys(ESTUDIOS).forEach(c=>{const o=document.createElement('option');o.value=o.textContent=c;$('nCat').appendChild(o)});
-$('buscar').oninput=renderEst;
-$('tAll').onclick=()=>{const ds=[...document.querySelectorAll('#estudios details')];const abrir=ds.every(d=>!d.open);ds.forEach(d=>{d.open=abrir});$('tAll').textContent=abrir?'Minimizar todas':'Expandir todas'};
-$('nAdd').onclick=()=>{
-  const c=$('nCat').value,n=$('nEst').value.trim().replace(/\s+/g,' ');if(!n)return;
-  const ya=ESTUDIOS[c].find(e=>e.toLowerCase()===n.toLowerCase());
-  if(!ya){ESTUDIOS[c].push(n);(extra[c]=extra[c]||[]).push(n);try{localStorage.setItem('hy_extra',JSON.stringify(extra))}catch(_){}}
-  sel.add(ya||n);cerradas.delete(c);$('nEst').value='';$('buscar').value='';renderEst();resumen();
-};
-$('nEst').addEventListener('keydown',e=>{if(e.key==='Enter')$('nAdd').click()});
-renderEst();resumen();
-
-// ---- Firma: dibujar o subir (PDF, PNG, JPG) ----
-function recorte(c){
-  const w=c.width,h=c.height,d=c.getContext('2d').getImageData(0,0,w,h).data;
-  let x0=w,y0=h,x1=-1,y1=-1;
-  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=(y*w+x)*4;if(d[i+3]>20&&(d[i]<235||d[i+1]<235||d[i+2]<235)){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}}
-  if(x1<0)return null;
-  const p=6;x0=Math.max(0,x0-p);y0=Math.max(0,y0-p);x1=Math.min(w-1,x1+p);y1=Math.min(h-1,y1+p);
-  const o=document.createElement('canvas');o.width=x1-x0+1;o.height=y1-y0+1;
-  o.getContext('2d').drawImage(c,x0,y0,o.width,o.height,0,0,o.width,o.height);return o;
-}
-function initFirma(id){
-  const cv=$('c-'+id),cx=cv.getContext('2d');let dib=false,ok=false;
-  function fit(){if(ok)return;const r=cv.getBoundingClientRect();if(!r.width)return;const d=window.devicePixelRatio||1;cv.width=r.width*d;cv.height=r.height*d;cx.setTransform(d,0,0,d,0,0);cx.lineWidth=2.2;cx.lineCap='round';cx.lineJoin='round';cx.strokeStyle='#0A3F55'}
-  function borrar(){cx.save();cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,cv.width,cv.height);cx.restore();ok=false}
-  const pos=ev=>{const r=cv.getBoundingClientRect();return[ev.clientX-r.left,ev.clientY-r.top]};
-  cv.addEventListener('pointerdown',ev=>{dib=true;cv.setPointerCapture(ev.pointerId);const[x,y]=pos(ev);cx.beginPath();cx.moveTo(x,y);cx.lineTo(x+.1,y+.1);cx.stroke();ok=true});
-  cv.addEventListener('pointermove',ev=>{if(!dib)return;const[x,y]=pos(ev);cx.lineTo(x,y);cx.stroke()});
-  ['pointerup','pointercancel'].forEach(t=>cv.addEventListener(t,()=>{dib=false}));
-  document.querySelector('[data-firma="'+id+'"]').onchange=async ev=>{
-    const f=ev.target.files[0];ev.target.value='';if(!f)return;
-    try{
-      let src=document.createElement('canvas');
-      if(f.type==='application/pdf'||/\.pdf$/i.test(f.name)){
-        if(!window.pdfjsLib)throw new Error('no se pudo cargar el lector de PDF');
-        const pdf=await pdfjsLib.getDocument({data:await f.arrayBuffer()}).promise;
-        const pg=await pdf.getPage(1),vp=pg.getViewport({scale:2});
-        src.width=vp.width;src.height=vp.height;const sx=src.getContext('2d');sx.fillStyle='#fff';sx.fillRect(0,0,src.width,src.height);
-        await pg.render({canvasContext:sx,viewport:vp}).promise;
-      }else{
-        const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error('formato de imagen no compatible'));i.src=URL.createObjectURL(f)});
-        src.width=img.naturalWidth;src.height=img.naturalHeight;src.getContext('2d').drawImage(img,0,0);
-      }
-      const c=recorte(src);if(!c)throw new Error('no se encontró una firma en el archivo');
-      fit();borrar();const r=cv.getBoundingClientRect(),s=Math.min(r.width*.9/c.width,r.height*.9/c.height,2),w=c.width*s,h=c.height*s;
-      cx.drawImage(c,(r.width-w)/2,(r.height-h)/2,w,h);ok=true;toast('Firma cargada.');
-    }catch(e){toast('No se pudo cargar la firma: '+e.message,1)}
-  };
-  FIRMAS[id]={fit,borrar,get(){if(!ok)return null;const c=recorte(cv);return c?{url:c.toDataURL('image/png'),w:c.width,h:c.height}:null}};
-}
-['ped','hc','cert'].forEach(initFirma);
-window.addEventListener('resize',()=>Object.values(FIRMAS).forEach(f=>f.fit()));
-
-// ---- Dictado por voz (en todos los apartados) ----
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-let rec=null,activo=null;
-function setMic(b,on){b.classList.toggle('on',on);b.textContent=on?'Detener dictado':'Dictar con la voz'}
-function detener(){if(!activo)return;const a=activo;activo=null;try{rec.stop()}catch(_){}setMic(a.btn,false);a.h.textContent=''}
-async function pedirMic(h){
-  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return true;
-  try{const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop());return true}
-  catch(e){h.textContent='No se pudo acceder al micrófono ('+(e.name||'error')+'). Habilitá el permiso en el navegador, o usá el micrófono del teclado del celular.';return false}
-}
-async function dictar(btn){
-  const ta=$(btn.dataset.for),h=$(btn.dataset.for.replace('t-','h-'));
-  if(activo&&activo.btn===btn){detener();return}
-  detener();
-  if(!SR){h.textContent='Tu navegador no permite dictado por voz. Usá el micrófono del teclado del celular o escribí.';return}
-  if(!(await pedirMic(h)))return;
-  rec=new SR();rec.lang='es-AR';rec.continuous=true;rec.interimResults=false;
-  rec.onresult=e=>{let t='';for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)t+=e.results[i][0].transcript;if(t)ta.value+=(ta.value&&!/\s$/.test(ta.value)?' ':'')+t.trim()};
-  rec.onerror=e=>{detener();h.textContent='El dictado se detuvo ('+e.error+'). Probá de nuevo.'};
-  rec.onend=()=>{if(activo&&activo.btn===btn){try{rec.start()}catch(_){detener()}}};
-  activo={btn,h};setMic(btn,true);h.textContent='Escuchando... hablá con normalidad.';
-  try{rec.start()}catch(_){detener()}
-}
-
-// ---- Pestañas y botones ----
-function ir(t){
-  detener();
-  document.querySelectorAll('.tab').forEach(x=>{const on=x.dataset.t===t;x.classList.toggle('on',on);x.setAttribute('aria-selected',on)});
-  ['ped','hc','cert'].forEach(k=>{$('p-'+k).hidden=k!==t});
-  FIRMAS[t].fit();
-}
-document.addEventListener('click',e=>{
-  const b=e.target.closest('button');if(!b)return;
-  if(b.classList.contains('tab'))ir(b.dataset.t);
-  else if(b.classList.contains('mic'))dictar(b);
-  else if(b.dataset.clear){$(b.dataset.clear).value=''}
-  else if(b.dataset.borrar)FIRMAS[b.dataset.borrar].borrar();
-  else if(b.dataset.pdf)generarPDF(b.dataset.pdf);
-});
-
-// ---- PDF ----
-async function generarPDF(t){
-  const P={hosp:$('hosp').value.trim(),nombre:$('nombre').value.trim(),af:$('afiliado').value.trim(),dni:$('dni').value.trim(),os:$('os').value.trim(),f:$('fecha').value};
-  if(!P.nombre||!P.dni)return toast('Completá al menos el nombre y el DNI del paciente.',1);
-  const txt=$('t-'+t).value.trim();let titulo,secs;
-  if(t==='ped'){if(!sel.size)return toast('Elegí al menos un estudio.',1);titulo='Pedido de estudios médicos';secs=[['Estudios solicitados',[...sel].map(e=>'- '+e)]];if(txt)secs.push(['Indicaciones',[txt]])}
-  else if(t==='hc'){if(!txt)return toast('Escribí o dictá la historia clínica.',1);titulo='Historia clínica';secs=[['Detalle',[txt]]]}
-  else{if(!txt)return toast('Escribí o dictá el texto del certificado.',1);titulo=$('cTipo').value.trim();if(!titulo)return toast('Escribí el tipo de certificado.',1);titulo=titulo[0].toUpperCase()+titulo.slice(1);const d=$('cDias').value;secs=[['Certificado',[txt]]];if(d)secs.push(['Días',[d+(d==1?' día':' días')]])}
-  const fm=FIRMAS[t].get();if(!fm)return toast('Falta la firma digital.',1);
-  try{
-    const {jsPDF}=window.jspdf,doc=new jsPDF({unit:'mm',format:'a4'}),W=210,M=18;let y;
-    const salto=h=>{if(y+h>282){doc.addPage();y=20}};
-    doc.setFillColor(15,91,122);doc.rect(0,0,W,26,'F');doc.setTextColor(255);doc.setFont('helvetica','bold');doc.setFontSize(18);
-    doc.text(doc.splitTextToSize(P.hosp||'HistoriaYa',W-2*M).slice(0,2),M,13);
-    y=38;doc.setTextColor(18,48,59);doc.setFontSize(14);doc.text(titulo,M,y);y+=9;doc.setFontSize(11);
-    [['Paciente',P.nombre],['N° de afiliado',P.af||'-'],['DNI',P.dni],['Fecha',P.f?P.f.split('-').reverse().join('/'):'-'],['Obra social',P.os||'-']].forEach(([k,v])=>{doc.setFont('helvetica','bold');doc.text(k+':',M,y);doc.setFont('helvetica','normal');doc.text(String(v),M+38,y);y+=7});
-    y+=2;doc.setDrawColor(42,168,155);doc.line(M,y,W-M,y);y+=8;
-    secs.forEach(([h,ls])=>{
-      salto(16);doc.setFont('helvetica','bold');doc.text(h,M,y);y+=6;doc.setFont('helvetica','normal');
-      ls.forEach(l=>doc.splitTextToSize(l,W-2*M-2).forEach(x=>{salto(6);doc.text(x,M+2,y);y+=5.5}));y+=4;
-    });
-    let w=60,hh=w*fm.h/fm.w;if(hh>28){hh=28;w=hh*fm.w/fm.h}
-    y+=8;salto(hh+16);doc.addImage(fm.url,'PNG',M,y,w,hh);y+=hh+1;doc.setDrawColor(18,48,59);doc.line(M,y,M+70,y);doc.setFontSize(9);
-    const m=window.medico;doc.text('Firma'+(m&&m.nombre?' - Dr/a. '+m.nombre+(m.matricula?' - Matrícula '+m.matricula:''):''),M,y+5);
-    const fname=({ped:'Pedido',hc:'HistoriaClinica',cert:'Certificado'})[t]+'_'+P.nombre.replace(/[^\wáéíóúñÁÉÍÓÚÑ]+/g,'_')+'.pdf';
-    const buf=doc.output('arraybuffer');
-    const dl=(typeof claude!=='undefined'&&claude.use)?await claude.use('downloads'):null;
-    if(dl)await dl.save({filename:fname,data:buf});else doc.save(fname);
-    toast('PDF descargado.');
-  }catch(e){toast('No se pudo generar el PDF: '+((e&&e.message)||'error'),1)}
-}
-
-// ---- Limpiar todo (se confirma tocando dos veces) ----
-let armado=null;
-$('limpiarTodo').onclick=()=>{
-  const b=$('limpiarTodo');
-  if(!armado){b.textContent='¿Seguro? Tocá de nuevo';armado=setTimeout(()=>{armado=null;b.textContent='Limpiar todo'},4000);return}
-  clearTimeout(armado);armado=null;b.textContent='Limpiar todo';detener();
-  ['nombre','afiliado','dni','os','t-ped','t-hc','t-cert','cDias','cTipo','buscar','nEst'].forEach(id=>{$(id).value=''});
-  $('fecha').value=hoy();sel.clear();renderEst();resumen();
-  Object.values(FIRMAS).forEach(f=>f.borrar());toast('Datos limpios (el hospital se mantiene).');
-};
-</script>
-<script src="config.js"></script>
-<script>
-// ===== Cuentas y suscripción =====
-const sb=supabase.createClient(SB_URL,SB_KEY);
-const q=id=>document.getElementById(id);
-let modo='in',poll=null;
-const sid=()=>localStorage.getItem('hy_sid');
-function vista(v){q('gate').hidden=v==='app';q('app').hidden=v!=='app';q('authBox').hidden=v!=='auth';q('payBox').hidden=v!=='pay';q('salir').hidden=v==='auth';}
-function say(id,t,err){const m=q(id);m.textContent=t;m.style.color=err?'var(--err)':'var(--tx)'}
-q('pPrecio').textContent=PRECIO;
-if(MODO_PAGO==='manual'){q('payBox').innerHTML='<h2>Activá tu acceso</h2><p>Para usar HistoriaYa escribinos por WhatsApp: te pasamos el precio y las formas de pago. Apenas confirmemos tu pago, activamos tu cuenta.</p><div class="row"><a class="btn" style="text-decoration:none;display:inline-block;padding:10px 16px;border-radius:8px;color:#fff;font-weight:600" target="_blank" rel="noopener" href="https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent('Hola, quiero activar mi cuenta de HistoriaYa')+'">Escribir por WhatsApp</a><button class="btn2" id="actualizar" type="button">Ya me activaron, actualizar</button></div><div id="pMsg" role="status" style="margin-top:10px;font-size:14px"></div>'}
-if(MODO_PAGO==='link'){
-  q('payBox').innerHTML='<h2>Activá tu acceso</h2><p>Precio: <b>'+PRECIO+'</b>. Pagá con el botón de abajo y después avisanos por WhatsApp: activamos tu cuenta apenas confirmamos el pago.</p><div class="row"><a class="btn" style="text-decoration:none;display:inline-block;padding:10px 16px;border-radius:10px;color:#fff;font-weight:600" target="_blank" rel="noopener" href="'+LINK_PAGO+'">Pagar con Mercado Pago</a><button class="btn2" id="avisar" type="button">Ya pagué: avisar por WhatsApp</button><button class="btn2" id="actualizar" type="button">Ya me activaron, actualizar</button></div><p class="hint">Si ya pagaste y todavía no te activaron, escribinos y lo resolvemos enseguida.</p><div id="pMsg" role="status" style="margin-top:10px;font-size:14px"></div>';
-  q('avisar').onclick=async()=>{const {data}=await sb.auth.getSession();const m=data.session?data.session.user.email:'';window.open('https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent('Hola, ya pagué HistoriaYa. El email de mi cuenta es: '+m),'_blank','noopener')};
-}
-async function salir(m){clearInterval(poll);await sb.auth.signOut();localStorage.removeItem('hy_sid');vista('auth');say('aMsg',m||'',!!m)}
-async function revisar(uid){
-  const {data:p,error}=await sb.from('profiles').select('*').eq('id',uid).single();
-  if(error||!p)return;
-  if(p.session_id!==sid()){await salir('Tu cuenta se abrió en otro dispositivo. Ingresá de nuevo para usarla acá.');return}
-  window.medico={nombre:p.nombre||'',matricula:p.matricula||''};
-  const ok=p.subscription_status==='active'&&(!p.current_period_end||new Date(p.current_period_end)>new Date());
-  vista(ok?'app':'pay');
-}
-async function abrir(session,nueva){
-  if(nueva){localStorage.setItem('hy_sid',crypto.randomUUID());await sb.from('profiles').update({session_id:sid()}).eq('id',session.user.id)}
-  await revisar(session.user.id);
-  clearInterval(poll);poll=setInterval(()=>revisar(session.user.id),20000);
-}
-q('aCambiar').onclick=()=>{
-  modo=modo==='in'?'up':'in';
-  q('reg').hidden=modo==='in';
-  q('aTit').textContent=q('aGo').textContent=modo==='in'?'Ingresar':'Crear cuenta';
-  q('aCambiar').textContent=modo==='in'?'Crear cuenta':'Ya tengo cuenta';
-};
-q('aGo').onclick=async()=>{
-  const email=q('aMail').value.trim(),pass=q('aPass').value;
-  if(!email||pass.length<6){say('aMsg','Ingresá un email y una contraseña de al menos 6 caracteres.',true);return}
-  say('aMsg','Procesando...');
-  if(modo==='up'){
-    const nombre=q('aNom').value.trim(),mat=q('aMat').value.trim();
-    if(!nombre||!mat){say('aMsg','Completá tu nombre y matrícula.',true);return}
-    const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{nombre,matricula:mat}}});
-    if(error){say('aMsg',error.message,true);return}
-    if(!data.session){say('aMsg','Cuenta creada. Confirmá tu email y después ingresá.');return}
-    await abrir(data.session,true);return;
-  }
-  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
-  if(error){say('aMsg','Email o contraseña incorrectos.',true);return}
-  await abrir(data.session,true);
-};
-q('olvide').onclick=async()=>{
-  const email=q('aMail').value.trim();
-  if(!email){say('aMsg','Escribí tu email arriba.',true);return}
-  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin});
-  if(error){say('aMsg',/rate limit/i.test(error.message)?'Se enviaron demasiados correos. Esperá un rato y probá de nuevo.':'No se pudo enviar el correo: '+error.message,true);return}
-  say('aMsg','Si el email existe, te enviamos un correo para cambiar la contraseña. Revisá también spam.');
-};
-sb.auth.onAuthStateChange(async ev=>{
-  if(ev==='PASSWORD_RECOVERY'){
-    const p=prompt('Nueva contraseña (mínimo 6 caracteres)');
-    if(p&&p.length>=6){await sb.auth.updateUser({password:p});await salir('Contraseña cambiada. Ingresá con la nueva.')}
-  }
-});
-if(q('pagar'))q('pagar').onclick=async()=>{
-  const {data}=await sb.auth.getSession();
-  if(!data.session){vista('auth');return}
-  say('pMsg','Abriendo Mercado Pago...');
-  try{
-    const r=await fetch('/.netlify/functions/crear-pago',{method:'POST',headers:{Authorization:'Bearer '+data.session.access_token}});
-    const j=await r.json();
-    if(!r.ok||!j.init_point)throw new Error(j.error||'error');
-    location.href=j.init_point;
-  }catch(e){say('pMsg','No se pudo iniciar el pago: '+e.message,true)}
-};
-q('actualizar').onclick=async()=>{
-  const {data}=await sb.auth.getSession();
-  if(!data.session)return;
-  await revisar(data.session.user.id);
-  if(!q('payBox').hidden)say('pMsg','Tu cuenta todavía no figura activa. Si ya pagaste, avisanos por WhatsApp.',true);
-};
-q('salir').onclick=()=>salir();
-if(/TU-PROYECTO|TU_ANON_KEY/.test(SB_URL+SB_KEY))say('aMsg','Falta completar config.js con los datos de Supabase.',true);
-(async()=>{const {data}=await sb.auth.getSession();if(data.session)abrir(data.session,false);else vista('auth')})();
+const _wa=(typeof WHATSAPP!=='undefined')?WHATSAPP:'';
+document.querySelectorAll('[data-wa]').forEach(a=>{a.href='https://wa.me/'+_wa+'?text='+encodeURIComponent(a.dataset.wa);a.target='_blank';a.rel='noopener'});
+if(typeof PRECIO!=='undefined')document.getElementById('precio-v').textContent=PRECIO;
 </script>
 </body>
 </html>
